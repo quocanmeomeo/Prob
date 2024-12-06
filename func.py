@@ -112,10 +112,79 @@ def open1m5():
     print(b)
     return lstPackCount
 
-print(open1m3())
-print(open1m5())
+def sta1():
+    # 11P1
+    a = []
+    for i in range (11):
+        a += pack1()
+    return a
 
-plotbar(open1m3())
+def sta2():
+    # 1P3 9P1
+    a = []
+    for i in range (9):
+        a += pack1()
+    a += pack3()
+    return a
 
+def sta3():
+    # 1P5 1P3 5P1
+    a = []
+    for i in range (5):
+        a += pack1()
+    a += pack3()
+    a += pack5()
+    return a
 
+def sta4():
+    # 1P5 7P1
+    a = []
+    for i in range (7):
+        a += pack1()
+    a += pack5()
+    return a
 
+def sta5():
+    #2P3 6P1
+    a = []
+    for i in range (3):
+        a += pack1()
+    a += pack3()
+    a += pack3()
+    return a
+
+def sta6():
+    #1P5 2P3 2P1
+    a = []
+    for i in range (2):
+        a += pack1()
+    a += pack3()
+    a += pack3()
+    a += pack5()
+    return a
+
+def sta7():
+    #2P5 3P1
+    a = []
+    for i in range(3):
+        a += pack1()
+    a += pack5()
+    return a
+
+def sta8():
+    #2P5 1P3 1P1
+    a = []
+    a += pack1()
+    a += pack3()
+    a += pack5()
+    a += pack5()
+    return a
+
+def sta9():
+    #1P5 3P3
+    a = []
+    a += pack3()
+    a += pack3()
+    a += pack3()
+    a += pack5()
+    return a

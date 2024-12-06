@@ -15,7 +15,7 @@ TITLE_IMAGE = 'Title.png'
 CARD_IMAGES = ['card0.png', 'card1.png', 'card2.png', 'card3.png', 'card4.png', 'card5.png']
 PACK_IMAGES = ['Pack1.png', 'Pack3.png', 'Pack5.png']
 PACK_PRICES = [10, 25, 40]
-TARGET_SPENDING = 50
+TARGET_SPENDING = 115
 VOUCHER_IMAGE = 'voucher.png'
 VOUCHER_IMAGES_B = ['b1.png', 'b2.png', 'b3.png', 'b4.png', 'b5.png']
 VOUCHER_IMAGES_C = ['c1.png', 'c2.png', 'c3.png', 'c4.png', 'c5.png']
@@ -89,7 +89,7 @@ def draw_interface():
     mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
     target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
     screen.blit(spending_text, (50, 240))
-    screen.blit(mean_text, (((bar_length - 350 - 50)/2)+10, 240))
+    screen.blit(mean_text, (((bar_length - 350 - 50)/2)+ 65, 240))
     screen.blit(target_text, (bar_length - 350, 240))
 
     # Draw card slots only if cards are selected
@@ -184,7 +184,7 @@ def restart_game():
     global total_spending, card_counters, slots, displayed_cards, start_time, flip_start_time, transitioning, mean_spending,game_data
 
     game_data.append(total_spending)
-    mean_spending = sum(game_data)/len(game_data)
+    mean_spending = int(sum(game_data)/len(game_data))
     # Resetting game variables
     total_spending = 0
     card_counters = [0, 0, 0, 0, 0]
