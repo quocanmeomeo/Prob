@@ -188,3 +188,15 @@ def sta9():
     a += pack3()
     a += pack5()
     return a
+
+def test_sta():
+    a = []
+    for i in range (10000):
+        b = sta1()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+print(test_sta())
