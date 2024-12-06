@@ -189,9 +189,9 @@ def sta9():
     a += pack5()
     return a
 
-def test_sta():
+def test_sta1():
     a = []
-    for i in range (10000):
+    for i in range (100000):
         b = sta1()
         if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
             a.append(1)
@@ -199,4 +199,101 @@ def test_sta():
             a.append(0)
     c = sum(a)/len(a)
     return c
-print(test_sta())
+
+def test_sta2():
+    a = []
+    for i in range (100000):
+        b = sta2()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta3():
+    a = []
+    for i in range (100000):
+        b = sta3()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta4():
+    a = []
+    for i in range (100000):
+        b = sta4()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta5():
+    a = []
+    for i in range (100000):
+        b = sta5()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta6():
+    a = []
+    for i in range (100000):
+        b = sta6()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta7():
+    a = []
+    for i in range (100000):
+        b = sta7()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta8():
+    a = []
+    for i in range (100000):
+        b = sta8()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+def test_sta9():
+    a = []
+    for i in range (100000):
+        b = sta9()
+        if (1 in b) and (2 in b) and (3 in b)and (4 in b) and (5 in b):
+            a.append(1)
+        else:
+            a.append(0)
+    c = sum(a)/len(a)
+    return c
+
+print("strategy 1: 11 Pack 1                    -> " + str(round((test_sta1()*100),2))+"%")
+print("strategy 2: 9 Pack 1, 1 Pack 3           -> " + str(round((test_sta2()*100),2))+"%")
+print("strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5 -> " + str(round((test_sta3()*100),2))+"%")
+print("strategy 4: 7 Pack 1, 1 Pack 5           -> " + str(round((test_sta4()*100),2))+"%")
+print("strategy 5: 6 Pack 1, 2 Pack 3,          -> " + str(round((test_sta5()*100),2))+"%")
+print("strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5 -> " + str(round((test_sta6()*100),2))+"%")
+print("strategy 7: 3 Pack 1, 2 Pack 5           -> " + str(round((test_sta7()*100),2))+"%")
+print("strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5 -> " + str(round((test_sta8()*100),2))+"%")
+print("strategy 9: 3 Pack 3, 1 Pack 5           -> " + str(round((test_sta9()*100),2))+"%")
