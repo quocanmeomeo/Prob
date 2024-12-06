@@ -82,6 +82,12 @@ flip_start_time = None
 flip_duration = 0.5  # Reduced flip duration to 0.5 seconds
 transitioning = False
 
+# Input box variables
+input_box = pygame.Rect(1350, 1030, 200, 50)
+active = False
+input_text = ''
+leaderboard = []
+game_over = False
 
 def draw_interface():
     screen.blit(bg_image, (0, 0))
@@ -98,13 +104,8 @@ def draw_interface():
     mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
     target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
     screen.blit(spending_text, (50, 240))
+    screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 65, 240))
     screen.blit(target_text, (bar_length - 350, 240))
-    if (mean_spending <10):
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 90, 240))
-    elif (mean_spending <100):
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 80, 240))
-    else:
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 75, 240))
 
     # Draw card slots only if cards are selected
     for i in range(5):
@@ -152,14 +153,21 @@ def draw_interface():
             counter_text_rect = counter_text.get_rect(
                 center=(pos[0] + voucher_img.get_width() + 40, pos[1] + voucher_img.get_height() // 2))
             screen.blit(counter_text, counter_text_rect.topleft)
-    if game_over:
-        if total_spending <= TARGET_SPENDING:
-            screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 900))
-        else:
-            screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 900))
 
-        # Draw replay image
-        screen.blit(replay_image, (1350, 1069.1 +250))
+        if game_over:
+            if total_spending <= TARGET_SPENDING:
+                screen.blit(win_image, (1500, 900))
+            else:
+                screen.blit(lose_image, (1500, 900))
+
+            # Draw replay image
+            screen.blit(replay_image, (1350, 1069.1 + 250))
+
+            # Draw input box when game is over
+            pygame.draw.rect(screen, WHITE, input_box, 2)
+            input_surface = font.render(input_text, True, BLACK)
+            screen.blit(input_surface, (input_box.x + 5, input_box.y + 5))
+            input_box.w = max(200, input_surface.get_width() + 10)
 
 
 def handle_pack_selection(pack_index):
@@ -209,10 +217,16 @@ def draw_flip_animation(screen, x, y, card_index):
         screen.blit(card_images[card_index], (x, y))
 
 def restart_game():
-    global total_spending, card_counters, slots, displayed_cards, start_time, flip_start_time, transitioning, mean_spending,game_data
+    global total_spending, card_counters, slots, displayed_cards, start_time, flip_start_time, transitioning, mean_spending, game_data, input_text
 
     game_data.append(total_spending)
-    mean_spending = int(sum(game_data)/len(game_data))
+    mean_spending = int(sum(game_data) / len(game_data))
+
+    if input_text.strip() != '':
+        leaderboard.append((input_text.strip(), total_spending))
+    input_text = ''
+    active = False
+
     # Resetting game variables
     total_spending = 0
     card_counters = [0, 0, 0, 0, 0]
@@ -222,6 +236,7 @@ def restart_game():
     flip_start_time = None
     transitioning = False
 
+
 # Main loop
 running = True
 while running:
@@ -230,6 +245,10 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
+            if game_over and input_box.collidepoint(event.pos):
+                active = True
+            else:
+                active = False
             # Check for pack selection
             if pack1_x <= mouse_x <= pack1_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1]:
                 handle_pack_selection(0)
@@ -238,12 +257,21 @@ while running:
             elif pack5_x <= mouse_x <= pack5_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1]:
                 handle_pack_selection(2)
             # Check for replay button click to restart the game
-            elif (1350 <= mouse_x <= 1350 + replay_image.get_width() and
-                  1069.1 +250 <= mouse_y <= 1069.1 +250 + replay_image.get_height()):
+            elif (1350 <= mouse_x <= 1350 + replay_image.get_width() and 1069.1 + 250 <= mouse_y <= 1069.1 + 250 + replay_image.get_height()):
                 if (0 in card_counters):
                     continue
                 else:
                     restart_game()
+        elif event.type == pygame.KEYDOWN and active:
+            if event.key == pygame.K_RETURN:
+                if input_text.strip() != '':
+                    leaderboard.append((input_text.strip(), total_spending))
+                restart_game()
+            elif event.key == pygame.K_BACKSPACE:
+                input_text = input_text[:-1]
+            else:
+                input_text += event.unicode
+
 
     update_slots()
     draw_interface()
