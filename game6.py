@@ -95,11 +95,12 @@ COLOR_TEXT = BLACK
 BACKGROUND_COLOR = WHITE
 
 # Input box rectangle
-input_box = pygame.Rect(1350, 1019.1 + 200, 300, 50)
+input_box = pygame.Rect(1350, 1019.1 + 200, 500, 100)
 color = COLOR_INACTIVE
 
 # Variables to manage input
-input_active = False
+# Variables to manage input
+active = False
 input_text = 'Your name'
 cursor_visible = True
 last_blink_time = time.time()
@@ -183,7 +184,7 @@ def draw_interface():
         # Draw input box
         pygame.draw.rect(screen, BACKGROUND_COLOR, input_box)
         text_surface = font.render(input_text, True, BLACK)
-        screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
+        screen.blit(text_surface, (input_box.x + 5, input_box.y + 10))
         pygame.draw.rect(screen, color, input_box, 2)
 
         # Draw the cursor if the input box is active and the cursor is visible
@@ -310,6 +311,7 @@ while running:
                 input_text = input_text[:-1]
             else:
                 input_text += event.unicode
+
 
     # Handle cursor blinking
     if time.time() - last_blink_time > 0.5:  # Change cursor visibility every 0.5 seconds
