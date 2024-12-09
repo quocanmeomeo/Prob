@@ -71,6 +71,8 @@ sum_spending = 0
 # Font
 FONT_PATH = 'TH Grisly Beast.ttf'  # Path to the font file
 font = pygame.font.Font(FONT_PATH, 37)
+bigfont = pygame.font.Font(FONT_PATH, 100)
+rankfont = pygame.font.Font(FONT_PATH, 70)
 
 # Calculate new pack positions
 pack1_x = 150 + int(1 * 300 * 1.5) - PACK_RATIO[0]// 2 - 115
@@ -186,13 +188,13 @@ def draw_interface():
             # Draw input box
             pygame.draw.rect(screen, BACKGROUND_COLOR, input_box)
             text_surface = font.render(input_text, True, BLACK)
-            screen.blit(text_surface, (input_box.x + 5, input_box.y + 10))
+            screen.blit(text_surface, (input_box.x + 5, input_box.y + 15))
             pygame.draw.rect(screen, color, input_box, 2)
 
             # Draw the cursor if the input box is active and the cursor is visible
             if input_active and cursor_visible:
                 cursor_x = input_box.x + 5 + text_surface.get_width()
-                cursor_y = input_box.y + 5
+                cursor_y = input_box.y + 15
                 cursor_height = text_surface.get_height()
                 pygame.draw.line(screen, COLOR_TEXT, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 2)
 
@@ -232,7 +234,7 @@ def draw_interface():
             (2350, voucher_y + 4 * 248 * 1.2 - 36)
         ]
         for i, pos in enumerate(voucher_positions):
-            voucher_img = voucher_images_b[i] if card_counters[i] == 0 else voucher_images_c[i]
+            voucher_img = voucher_images_c[i] if card_counters[i] == 0 else voucher_images_c[i]
             screen.blit(voucher_img, pos)
             if card_counters[i] > 0:
                 counter_text = font.render(str(card_counters[i]), True, BLACK)
@@ -241,15 +243,14 @@ def draw_interface():
                 screen.blit(counter_text, counter_text_rect.topleft)
 
         # Draw Leaderboard title
-        leaderboard_text = font.render("Leader board", True, BLACK)
-        screen.blit(leaderboard_text, (SCREEN_WIDTH // 2 - leaderboard_text.get_width() // 2, 400))
+        leaderboard_text = bigfont.render("Leaderboard", True, BLACK)
+        screen.blit(leaderboard_text, ((SCREEN_WIDTH- 700) // 2 - leaderboard_text.get_width() // 2, 350))
 
         # Draw Leaderboard entries
-        if len(game_data) > 0:
-            entry_text = font.render(f"#1: {game_data[0][0]} - {game_data[0][1]}", True, BLACK)
-            screen.blit(entry_text, (SCREEN_WIDTH // 2 - entry_text.get_width() // 2, 450))
-
-
+        if len(leaderboard) > 0:
+            for i in range (len(leaderboard)):
+                entry_text = rankfont.render(f"#{i+1}: {leaderboard[i][0]} - {leaderboard[i][1]}", True, BLACK)
+                screen.blit(entry_text, ((SCREEN_WIDTH- 700) // 2 - entry_text.get_width() // 2, 550 + (i*100)))
 
 def handle_pack_selection(pack_index):
     global total_spending, displayed_cards, start_time, slots, flip_start_time, transitioning
@@ -304,6 +305,7 @@ def restart_game():
     for i in range (len(game_data)):
         sum_spending += game_data[i][1]
     mean_spending = int(sum_spending/len(game_data))
+    sort_leaderboard()
     # Resetting game variables
     total_spending = 0
     card_counters = [0, 0, 0, 0, 0]
@@ -312,6 +314,14 @@ def restart_game():
     start_time = None
     flip_start_time = None
     transitioning = False
+
+leaderboard = []
+def sort_leaderboard():
+    global leaderboard, game_data
+    filtered_data = [item for item in game_data if item[0] != '']
+    sorted_data = sorted(filtered_data, key=lambda x: x[1], reverse=False)
+    leaderboard = sorted_data[:5]
+    print(leaderboard)
 
 # Main loop
 running = True
@@ -322,7 +332,7 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            if input_box.collidepoint(event.pos):
+            if input_box.collidepoint(event.pos) and not (0 in card_counters):
                 input_active = not input_active
                 if input_active:
                     input_text = ''
