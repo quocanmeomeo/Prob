@@ -71,14 +71,35 @@ def open1m1():
 
 def plotbar(data):
     # Creating the bar graph
-    plt.figure(figsize=(20, 6))
-    plt.bar(range(len(data)), data, color='skyblue')
+    plt.figure(figsize=(10, 6))
+    plt.bar(range(len(data)), data, color='#44281d')
 
     # Adding title and labels
-    plt.title('Bar Graph of List Data')
-    plt.xlabel('Index')
-    plt.ylabel('Value')
-    plt.savefig('bar_graph.png')
+    plt.xlabel('Number of pack open (Mean = 11.42)')
+    plt.ylabel('Wining rate (%)')
+
+    # Setting x-axis range
+    plt.xlim(0, 40)
+
+    ax = plt.gca()
+    # Changing background color and axis color
+    ax = plt.gca()  # Get current axis
+    ax.set_facecolor('#FFF5E7')  # Set background color
+    ax.spines['bottom'].set_color('#44281d')  # X-axis color
+    ax.spines['left'].set_color('#44281d')  # Y-axis color
+    ax.spines['top'].set_color('#44281d')
+    ax.spines['right'].set_color('#44281d')
+    ax.xaxis.label.set_color('#44281d')  # X-axis label color
+    ax.yaxis.label.set_color('#44281d')  # Y-axis label color
+    ax.tick_params(axis='x', colors='#44281d')  # X-axis tick color
+    ax.tick_params(axis='y', colors='#44281d')  # Y-axis tick color
+    ax.title.set_color('#44281d')  # Title color
+    # Saving the figure
+    plt.savefig('bar_graph_openpack.png')
+
+
+
+plotbar(open1m1())
 
 def open1m3():
     lstPack = []
@@ -288,12 +309,12 @@ def test_sta9():
     c = sum(a)/len(a)
     return c
 
-print("strategy 1: 11 Pack 1                    -> " + str(round((test_sta1()*100),2))+"%")
-print("strategy 2: 9 Pack 1, 1 Pack 3           -> " + str(round((test_sta2()*100),2))+"%")
-print("strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5 -> " + str(round((test_sta3()*100),2))+"%")
-print("strategy 4: 7 Pack 1, 1 Pack 5           -> " + str(round((test_sta4()*100),2))+"%")
-print("strategy 5: 6 Pack 1, 2 Pack 3,          -> " + str(round((test_sta5()*100),2))+"%")
-print("strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5 -> " + str(round((test_sta6()*100),2))+"%")
-print("strategy 7: 3 Pack 1, 2 Pack 5           -> " + str(round((test_sta7()*100),2))+"%")
-print("strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5 -> " + str(round((test_sta8()*100),2))+"%")
-print("strategy 9: 3 Pack 3, 1 Pack 5           -> " + str(round((test_sta9()*100),2))+"%")
+# print("strategy 1: 11 Pack 1                    -> " + str(round((test_sta1()*100),2))+"%")
+# print("strategy 2: 9 Pack 1, 1 Pack 3           -> " + str(round((test_sta2()*100),2))+"%")
+# print("strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5 -> " + str(round((test_sta3()*100),2))+"%")
+# print("strategy 4: 7 Pack 1, 1 Pack 5           -> " + str(round((test_sta4()*100),2))+"%")
+# print("strategy 5: 6 Pack 1, 2 Pack 3,          -> " + str(round((test_sta5()*100),2))+"%")
+# print("strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5 -> " + str(round((test_sta6()*100),2))+"%")
+# print("strategy 7: 3 Pack 1, 2 Pack 5           -> " + str(round((test_sta7()*100),2))+"%")
+# print("strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5 -> " + str(round((test_sta8()*100),2))+"%")
+# print("strategy 9: 3 Pack 3, 1 Pack 5           -> " + str(round((test_sta9()*100),2))+"%")
