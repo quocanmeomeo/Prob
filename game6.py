@@ -86,7 +86,8 @@ flip_start_time = None
 flip_duration = 0.5  # Reduced flip duration to 0.5 seconds
 transitioning = False
 
-
+# Additional state to manage the screen
+show_leaderboard = False
 
 # Text box colors
 COLOR_INACTIVE = BLACK
@@ -106,96 +107,147 @@ cursor_visible = True
 last_blink_time = time.time()
 
 def draw_interface():
-    screen.blit(bg_image, (0, 0))
-    screen.blit(title_image, (0, 0))
+    if not show_leaderboard:
+        screen.blit(bg_image, (0, 0))
+        screen.blit(title_image, (0, 0))
 
-    # Draw spending bar
-    bar_length = pack5_x + CARD_RATIO[0] + 200
-    pygame.draw.rect(screen, BLACK, (50, 150, bar_length, 60), 2)
-    spending_bar_length = min(bar_length, int(bar_length * total_spending / TARGET_SPENDING))
-    pygame.draw.rect(screen, (150, 75, 0), (50, 150, spending_bar_length, 60))
+        # Draw spending bar
+        bar_length = pack5_x + CARD_RATIO[0] + 200
+        pygame.draw.rect(screen, BLACK, (50, 150, bar_length, 60), 2)
+        spending_bar_length = min(bar_length, int(bar_length * total_spending / TARGET_SPENDING))
+        pygame.draw.rect(screen, (150, 75, 0), (50, 150, spending_bar_length, 60))
 
-    # Draw spending text
-    spending_text = font.render(f"Total spending: {total_spending}", True, BLACK)
-    mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
-    target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
-    screen.blit(spending_text, (50, 240))
-    screen.blit(target_text, (bar_length - 350, 240))
-    if (mean_spending <10):
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 90, 240))
-    elif (mean_spending <100):
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 80, 240))
-    else:
-        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 75, 240))
-
-    # Draw card slots only if cards are selected
-    for i in range(5):
-        if slots[i] is not None:
-            card_x = 150 + int(i * 300 * 1.5) -70
-            card_y = 350
-            draw_flip_animation(screen, card_x, card_y, slots[i])
-
-    # Check win/lose condition
-    game_over = all(c > 0 for c in card_counters)
-
-    if not game_over:
-        # Draw packs
-        screen.blit(pack_images[0], (pack1_x, pack_y))
-        screen.blit(pack_images[1], (pack3_x, pack_y))
-        screen.blit(pack_images[2], (pack5_x, pack_y))
-
-        # Draw pack prices
-        price_text1 = font.render(f"Price {PACK_PRICES[0]}", True, BLACK)
-        price_text_rect1 = price_text1.get_rect(center=(pack1_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
-        screen.blit(price_text1, price_text_rect1.topleft)
-
-        price_text2 = font.render(f"Price {PACK_PRICES[1]}", True, BLACK)
-        price_text_rect2 = price_text2.get_rect(center=(pack3_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
-        screen.blit(price_text2, price_text_rect2.topleft)
-
-        price_text3 = font.render(f"Price {PACK_PRICES[2]}", True, BLACK)
-        price_text_rect3 = price_text3.get_rect(center=(pack5_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
-        screen.blit(price_text3, price_text_rect3.topleft)
-
-    # Draw voucher images and move counters next to them
-    voucher_y = (SCREEN_HEIGHT - 1240*1.2) // 2
-    voucher_positions = [
-        (2350, voucher_y + 0 * 248*1.2),
-        (2350, voucher_y + 1 * 248*1.2 - 9),
-        (2350, voucher_y + 2 * 248*1.2 - 19),
-        (2350, voucher_y + 3 * 248*1.2 - 28),
-        (2350, voucher_y + 4 * 248*1.2 - 36)
-    ]
-    for i, pos in enumerate(voucher_positions):
-        voucher_img = voucher_images_b[i] if card_counters[i] == 0 else voucher_images_c[i]
-        screen.blit(voucher_img, pos)
-        if card_counters[i] > 0:
-            counter_text = font.render(str(card_counters[i]), True, BLACK)
-            counter_text_rect = counter_text.get_rect(
-                center=(pos[0] + voucher_img.get_width() + 40, pos[1] + voucher_img.get_height() // 2))
-            screen.blit(counter_text, counter_text_rect.topleft)
-
-    if game_over:
-        if total_spending <= TARGET_SPENDING:
-            screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
+        # Draw spending text
+        spending_text = font.render(f"Total spending: {total_spending}", True, BLACK)
+        mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
+        target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
+        screen.blit(spending_text, (50, 240))
+        screen.blit(target_text, (bar_length - 350, 240))
+        if (mean_spending <10):
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 90, 240))
+        elif (mean_spending <100):
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 80, 240))
         else:
-            screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 75, 240))
 
-        # Draw input box
-        pygame.draw.rect(screen, BACKGROUND_COLOR, input_box)
-        text_surface = font.render(input_text, True, BLACK)
-        screen.blit(text_surface, (input_box.x + 5, input_box.y + 10))
-        pygame.draw.rect(screen, color, input_box, 2)
+        # Draw card slots only if cards are selected
+        for i in range(5):
+            if slots[i] is not None:
+                card_x = 150 + int(i * 300 * 1.5) -70
+                card_y = 350
+                draw_flip_animation(screen, card_x, card_y, slots[i])
 
-        # Draw the cursor if the input box is active and the cursor is visible
-        if input_active and cursor_visible:
-            cursor_x = input_box.x + 5 + text_surface.get_width()
-            cursor_y = input_box.y + 5
-            cursor_height = text_surface.get_height()
-            pygame.draw.line(screen, COLOR_TEXT, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 2)
+        # Check win/lose condition
+        game_over = all(c > 0 for c in card_counters)
 
-        # Draw replay image
-        screen.blit(replay_image, (1350, 1069.1 + 250))
+        if not game_over:
+            # Draw packs
+            screen.blit(pack_images[0], (pack1_x, pack_y))
+            screen.blit(pack_images[1], (pack3_x, pack_y))
+            screen.blit(pack_images[2], (pack5_x, pack_y))
+
+            # Draw pack prices
+            price_text1 = font.render(f"Price {PACK_PRICES[0]}", True, BLACK)
+            price_text_rect1 = price_text1.get_rect(center=(pack1_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
+            screen.blit(price_text1, price_text_rect1.topleft)
+
+            price_text2 = font.render(f"Price {PACK_PRICES[1]}", True, BLACK)
+            price_text_rect2 = price_text2.get_rect(center=(pack3_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
+            screen.blit(price_text2, price_text_rect2.topleft)
+
+            price_text3 = font.render(f"Price {PACK_PRICES[2]}", True, BLACK)
+            price_text_rect3 = price_text3.get_rect(center=(pack5_x + PACK_RATIO[0] // 2, pack_y + PACK_RATIO[1] + 40))
+            screen.blit(price_text3, price_text_rect3.topleft)
+
+        # Draw voucher images and move counters next to them
+        voucher_y = (SCREEN_HEIGHT - 1240*1.2) // 2
+        voucher_positions = [
+            (2350, voucher_y + 0 * 248*1.2),
+            (2350, voucher_y + 1 * 248*1.2 - 9),
+            (2350, voucher_y + 2 * 248*1.2 - 19),
+            (2350, voucher_y + 3 * 248*1.2 - 28),
+            (2350, voucher_y + 4 * 248*1.2 - 36)
+        ]
+        for i, pos in enumerate(voucher_positions):
+            voucher_img = voucher_images_b[i] if card_counters[i] == 0 else voucher_images_c[i]
+            screen.blit(voucher_img, pos)
+            if card_counters[i] > 0:
+                counter_text = font.render(str(card_counters[i]), True, BLACK)
+                counter_text_rect = counter_text.get_rect(
+                    center=(pos[0] + voucher_img.get_width() + 40, pos[1] + voucher_img.get_height() // 2))
+                screen.blit(counter_text, counter_text_rect.topleft)
+
+        if game_over:
+            if total_spending <= TARGET_SPENDING:
+                screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
+            else:
+                screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
+
+            # Draw input box
+            pygame.draw.rect(screen, BACKGROUND_COLOR, input_box)
+            text_surface = font.render(input_text, True, BLACK)
+            screen.blit(text_surface, (input_box.x + 5, input_box.y + 10))
+            pygame.draw.rect(screen, color, input_box, 2)
+
+            # Draw the cursor if the input box is active and the cursor is visible
+            if input_active and cursor_visible:
+                cursor_x = input_box.x + 5 + text_surface.get_width()
+                cursor_y = input_box.y + 5
+                cursor_height = text_surface.get_height()
+                pygame.draw.line(screen, COLOR_TEXT, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 2)
+
+            # Draw replay image
+            screen.blit(replay_image, (1350, 1069.1 + 250))
+    else:
+        # Leaderboard screen
+        screen.blit(bg_image, (0, 0))
+        screen.blit(title_image, (0, 0))
+
+        # Draw spending bar
+        bar_length = pack5_x + CARD_RATIO[0] + 200
+        pygame.draw.rect(screen, BLACK, (50, 150, bar_length, 60), 2)
+        spending_bar_length = min(bar_length, int(bar_length * total_spending / TARGET_SPENDING))
+        pygame.draw.rect(screen, (150, 75, 0), (50, 150, spending_bar_length, 60))
+
+        # Draw spending text
+        spending_text = font.render(f"Total spending: {total_spending}", True, BLACK)
+        mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
+        target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
+        screen.blit(spending_text, (50, 240))
+        screen.blit(target_text, (bar_length - 350, 240))
+        if (mean_spending < 10):
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 90, 240))
+        elif (mean_spending < 100):
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 80, 240))
+        else:
+            screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 75, 240))
+
+        # Draw voucher images and move counters next to them
+        voucher_y = (SCREEN_HEIGHT - 1240 * 1.2) // 2
+        voucher_positions = [
+            (2350, voucher_y + 0 * 248 * 1.2),
+            (2350, voucher_y + 1 * 248 * 1.2 - 9),
+            (2350, voucher_y + 2 * 248 * 1.2 - 19),
+            (2350, voucher_y + 3 * 248 * 1.2 - 28),
+            (2350, voucher_y + 4 * 248 * 1.2 - 36)
+        ]
+        for i, pos in enumerate(voucher_positions):
+            voucher_img = voucher_images_b[i] if card_counters[i] == 0 else voucher_images_c[i]
+            screen.blit(voucher_img, pos)
+            if card_counters[i] > 0:
+                counter_text = font.render(str(card_counters[i]), True, BLACK)
+                counter_text_rect = counter_text.get_rect(
+                    center=(pos[0] + voucher_img.get_width() + 40, pos[1] + voucher_img.get_height() // 2))
+                screen.blit(counter_text, counter_text_rect.topleft)
+
+        # Draw Leaderboard title
+        leaderboard_text = font.render("Leader board", True, BLACK)
+        screen.blit(leaderboard_text, (SCREEN_WIDTH // 2 - leaderboard_text.get_width() // 2, 400))
+
+        # Draw Leaderboard entries
+        if len(game_data) > 0:
+            entry_text = font.render(f"#1: {game_data[0][0]} - {game_data[0][1]}", True, BLACK)
+            screen.blit(entry_text, (SCREEN_WIDTH // 2 - entry_text.get_width() // 2, 450))
 
 
 
@@ -264,12 +316,12 @@ def restart_game():
 # Main loop
 running = True
 game_over_displayed = False
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = event.pos
             if input_box.collidepoint(event.pos):
                 input_active = not input_active
                 if input_active:
@@ -278,7 +330,15 @@ while running:
                 input_active = False
                 input_text = 'Your name'
             color = COLOR_ACTIVE if input_active else COLOR_INACTIVE
-            mouse_x, mouse_y = event.pos
+
+            # Check for title click to toggle leaderboard screen
+            if 0 <= mouse_x <= title_image.get_width() and 0 <= mouse_y <= title_image.get_height():
+                show_leaderboard = not show_leaderboard
+                continue
+
+            if show_leaderboard:
+                continue  # Ignore other clicks when showing leaderboard
+
             # Check for pack selection
             if pack1_x <= mouse_x <= pack1_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1] and (0 in card_counters):
                 handle_pack_selection(0)
@@ -312,12 +372,10 @@ while running:
             else:
                 input_text += event.unicode
 
-
     # Handle cursor blinking
     if time.time() - last_blink_time > 0.5:  # Change cursor visibility every 0.5 seconds
         cursor_visible = not cursor_visible
         last_blink_time = time.time()
-
 
     update_slots()
     draw_interface()
