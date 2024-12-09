@@ -22,9 +22,12 @@ VOUCHER_IMAGES_C = ['c1.png', 'c2.png', 'c3.png', 'c4.png', 'c5.png']
 WIN = 'win.png'
 LOSE = 'lose.png'
 REPLAY = 'replay.png'
+
 # Colors
 WHITE = (255, 255, 255)
-BLACK = (68,40,29)
+BLACK = (68, 40, 29)
+GRAY = (200, 200, 200)
+TRANSPARENT = (0, 0, 0, 0)
 
 # Load images
 bg_image = pygame.image.load(BG_IMAGE)
@@ -63,6 +66,7 @@ total_spending = 0
 # Previous game
 game_data = []
 mean_spending = 0
+sum_spending = 0
 
 # Font
 FONT_PATH = 'TH Grisly Beast.ttf'  # Path to the font file
@@ -82,12 +86,23 @@ flip_start_time = None
 flip_duration = 0.5  # Reduced flip duration to 0.5 seconds
 transitioning = False
 
-# Input box variables
-input_box = pygame.Rect(1350, 1030, 200, 50)
-active = False
-input_text = ''
-leaderboard = []
-game_over = False
+
+
+# Text box colors
+COLOR_INACTIVE = BLACK
+COLOR_ACTIVE = BLACK
+COLOR_TEXT = BLACK
+BACKGROUND_COLOR = WHITE
+
+# Input box rectangle
+input_box = pygame.Rect(1350, 1019.1 + 200, 300, 50)
+color = COLOR_INACTIVE
+
+# Variables to manage input
+input_active = False
+input_text = 'Your name'
+cursor_visible = True
+last_blink_time = time.time()
 
 def draw_interface():
     screen.blit(bg_image, (0, 0))
@@ -104,14 +119,19 @@ def draw_interface():
     mean_text = font.render(f"Mean spending: {mean_spending}", True, BLACK)
     target_text = font.render(f"Target spending: {TARGET_SPENDING}", True, BLACK)
     screen.blit(spending_text, (50, 240))
-    screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 65, 240))
     screen.blit(target_text, (bar_length - 350, 240))
+    if (mean_spending <10):
+        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 90, 240))
+    elif (mean_spending <100):
+        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 80, 240))
+    else:
+        screen.blit(mean_text, (((bar_length - 350 - 50) / 2) + 75, 240))
 
     # Draw card slots only if cards are selected
     for i in range(5):
         if slots[i] is not None:
             card_x = 150 + int(i * 300 * 1.5) -70
-            card_y = 300
+            card_y = 350
             draw_flip_animation(screen, card_x, card_y, slots[i])
 
     # Check win/lose condition
@@ -154,20 +174,28 @@ def draw_interface():
                 center=(pos[0] + voucher_img.get_width() + 40, pos[1] + voucher_img.get_height() // 2))
             screen.blit(counter_text, counter_text_rect.topleft)
 
-        if game_over:
-            if total_spending <= TARGET_SPENDING:
-                screen.blit(win_image, (1500, 900))
-            else:
-                screen.blit(lose_image, (1500, 900))
+    if game_over:
+        if total_spending <= TARGET_SPENDING:
+            screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
+        else:
+            screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
 
-            # Draw replay image
-            screen.blit(replay_image, (1350, 1069.1 + 250))
+        # Draw input box
+        pygame.draw.rect(screen, BACKGROUND_COLOR, input_box)
+        text_surface = font.render(input_text, True, BLACK)
+        screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
+        pygame.draw.rect(screen, color, input_box, 2)
 
-            # Draw input box when game is over
-            pygame.draw.rect(screen, WHITE, input_box, 2)
-            input_surface = font.render(input_text, True, BLACK)
-            screen.blit(input_surface, (input_box.x + 5, input_box.y + 5))
-            input_box.w = max(200, input_surface.get_width() + 10)
+        # Draw the cursor if the input box is active and the cursor is visible
+        if input_active and cursor_visible:
+            cursor_x = input_box.x + 5 + text_surface.get_width()
+            cursor_y = input_box.y + 5
+            cursor_height = text_surface.get_height()
+            pygame.draw.line(screen, COLOR_TEXT, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 2)
+
+        # Draw replay image
+        screen.blit(replay_image, (1350, 1069.1 + 250))
+
 
 
 def handle_pack_selection(pack_index):
@@ -217,16 +245,12 @@ def draw_flip_animation(screen, x, y, card_index):
         screen.blit(card_images[card_index], (x, y))
 
 def restart_game():
-    global total_spending, card_counters, slots, displayed_cards, start_time, flip_start_time, transitioning, mean_spending, game_data, input_text
+    global total_spending, card_counters, slots, displayed_cards, start_time, flip_start_time, transitioning, \
+        mean_spending,game_data, sum_spending
 
-    game_data.append(total_spending)
-    mean_spending = int(sum(game_data) / len(game_data))
-
-    if input_text.strip() != '':
-        leaderboard.append((input_text.strip(), total_spending))
-    input_text = ''
-    active = False
-
+    for i in range (len(game_data)):
+        sum_spending += game_data[i][1]
+    mean_spending = int(sum_spending/len(game_data))
     # Resetting game variables
     total_spending = 0
     card_counters = [0, 0, 0, 0, 0]
@@ -236,41 +260,61 @@ def restart_game():
     flip_start_time = None
     transitioning = False
 
-
 # Main loop
 running = True
+game_over_displayed = False
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = event.pos
-            if game_over and input_box.collidepoint(event.pos):
-                active = True
+            if input_box.collidepoint(event.pos):
+                input_active = not input_active
+                if input_active:
+                    input_text = ''
             else:
-                active = False
+                input_active = False
+                input_text = 'Your name'
+            color = COLOR_ACTIVE if input_active else COLOR_INACTIVE
+            mouse_x, mouse_y = event.pos
             # Check for pack selection
-            if pack1_x <= mouse_x <= pack1_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1]:
+            if pack1_x <= mouse_x <= pack1_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1] and (0 in card_counters):
                 handle_pack_selection(0)
-            elif pack3_x <= mouse_x <= pack3_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1]:
+            elif pack3_x <= mouse_x <= pack3_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1] and (0 in card_counters):
                 handle_pack_selection(1)
-            elif pack5_x <= mouse_x <= pack5_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1]:
+            elif pack5_x <= mouse_x <= pack5_x + PACK_RATIO[0] and pack_y <= mouse_y <= pack_y + PACK_RATIO[1] and (0 in card_counters):
                 handle_pack_selection(2)
             # Check for replay button click to restart the game
-            elif (1350 <= mouse_x <= 1350 + replay_image.get_width() and 1069.1 + 250 <= mouse_y <= 1069.1 + 250 + replay_image.get_height()):
+            elif (1350 <= mouse_x <= 1350 + replay_image.get_width() and
+                  1069.1 + 250 <= mouse_y <= 1069.1 + 250 + replay_image.get_height()):
                 if (0 in card_counters):
                     continue
                 else:
+                    game_data.append(["", total_spending])
                     restart_game()
-        elif event.type == pygame.KEYDOWN and active:
+        elif event.type == pygame.KEYDOWN and input_active:
             if event.key == pygame.K_RETURN:
-                if input_text.strip() != '':
-                    leaderboard.append((input_text.strip(), total_spending))
+                if input_text.strip() and (input_text != 'Your name'):
+                    # Store the input text with total_spending
+                    game_data.append([input_text, total_spending])
+                else:
+                    game_data.append(["", total_spending])
                 restart_game()
+                print(game_data)
+                game_over_displayed = False
+                end_game_time = None
+                input_active = False
+                input_text = 'Your name'
             elif event.key == pygame.K_BACKSPACE:
                 input_text = input_text[:-1]
             else:
                 input_text += event.unicode
+
+    # Handle cursor blinking
+    if time.time() - last_blink_time > 0.5:  # Change cursor visibility every 0.5 seconds
+        cursor_visible = not cursor_visible
+        last_blink_time = time.time()
 
 
     update_slots()
@@ -278,4 +322,3 @@ while running:
     pygame.display.flip()
 
 pygame.quit()
-

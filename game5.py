@@ -110,7 +110,7 @@ def draw_interface():
     for i in range(5):
         if slots[i] is not None:
             card_x = 150 + int(i * 300 * 1.5) -70
-            card_y = 300
+            card_y = 350
             draw_flip_animation(screen, card_x, card_y, slots[i])
 
     # Check win/lose condition
@@ -154,9 +154,9 @@ def draw_interface():
             screen.blit(counter_text, counter_text_rect.topleft)
     if game_over:
         if total_spending <= TARGET_SPENDING:
-            screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 900))
+            screen.blit(win_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
         else:
-            screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 900))
+            screen.blit(lose_image, (((150 + int(1 * 300 * 1.5) -70) - (150 + int(0 * 300 * 1.5) -70))/2, 925))
 
         # Draw replay image
         screen.blit(replay_image, (1350, 1069.1 +250))
