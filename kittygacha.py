@@ -4,7 +4,6 @@ import time
 
 # Initialize Pygame
 pygame.init()
-
 # Constants
 SCREEN_WIDTH = 3090
 SCREEN_HEIGHT = 1600
@@ -305,6 +304,7 @@ def restart_game():
     for i in range (len(game_data)):
         sum_spending += game_data[i][1]
     mean_spending = int(sum_spending/len(game_data))
+    sum_spending = 0
     sort_leaderboard()
     # Resetting game variables
     total_spending = 0

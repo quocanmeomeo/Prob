@@ -1,6 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 
+
 def pack():
     lstOutcome = []
     for i in range (5):
@@ -70,10 +71,6 @@ def open1m1():
         lstPackCount[i] = (lstPackCount[i]/1000000)*100
     return lstPackCount
 
-import matplotlib.pyplot as plt
-
-import matplotlib.pyplot as plt
-
 def plotbar(data):
     # Creating the bar graph
     plt.figure(figsize=(10, 6))
@@ -107,8 +104,6 @@ def plotbar(data):
 
     # Saving the figure
     plt.savefig('bar_graph_openpack.png')
-
-
 
 def open1m3():
     lstPack = []
@@ -177,7 +172,7 @@ def sta4():
 def sta5():
     #2P3 6P1
     a = []
-    for i in range (3):
+    for i in range (6):
         a += pack1()
     a += pack3()
     a += pack3()
@@ -198,6 +193,7 @@ def sta7():
     a = []
     for i in range(3):
         a += pack1()
+    a += pack5()
     a += pack5()
     return a
 
@@ -361,30 +357,6 @@ def test_sta11():
             a.append(0)
     c = sum(a)/len(a)
     return c
-#
-s1 = round((test_sta1()*100),2)
-s2 = round((test_sta2()*100),2)
-s3 = round((test_sta3()*100),2)
-s4 = round((test_sta4()*100),2)
-s5 = round((test_sta5()*100),2)
-s6 = round((test_sta6()*100),2)
-s7 = round((test_sta7()*100),2)
-s8 = round((test_sta8()*100),2)
-s9 = round((test_sta9()*100),2)
-s10 = round((test_sta10()*100),2)
-s11 = round((test_sta11()*100),2)
-
-print("strategy 1: 11 Pack 1                    -> " + str(s1)+"%" +" - "+ str (round((((1*11)+(3*0)+(5*0))),2)))
-print("strategy 2: 9 Pack 1, 1 Pack 3           -> " + str(s2)+"%" +" - "+ str (round((((1*9)+(3*1)+(5*0))),2)))
-print("strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5 -> " + str(s3)+"%" +" - "+ str (round((((1*5)+(3*1)+(5*1))),2)))
-print("strategy 4: 7 Pack 1, 1 Pack 5           -> " + str(s4)+"%" +" - "+ str (round((((1*7)+(3*0)+(5*1))),2)))
-print("strategy 5: 6 Pack 1, 2 Pack 3,          -> " + str(s5)+"%" +" - "+ str (round((((1*6)+(3*2)+(5*0))),2)))
-print("strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5 -> " + str(s6)+"%" +" - "+ str (round((((1*2)+(3*2)+(5*1))),2)))
-print("strategy 7: 3 Pack 1, 2 Pack 5           -> " + str(s7)+"%" +" - "+ str (round((((1*3)+(3*0)+(5*2))),2)))
-print("strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5 -> " + str(s8)+"%" +" - "+ str (round((((1*1)+(3*1)+(5*2))),2)))
-print("strategy 9: 3 Pack 3, 1 Pack 5           -> " + str(s9)+"%" +" - "+ str (round((((1*0)+(3*3)+(5*1))),2)))
-print("strategy 10: 1 pack 1, 4 Pack 3          -> " + str(s10)+"%" +" - "+ str (round((((1*1)+(3*4)+(5*0))),2)))
-print("strategy 11: 4 pack 1, 3 Pack 3          -> " + str(s11)+"%" +" - "+ str (round((((1*4)+(3*3)+(5*0))),2)))
 
 def find_combinations_1():
     options = [10, 25, 40]
@@ -416,30 +388,28 @@ def find_combinations_1():
 
     find_combinations_recursive([], 0)
 
-
 counter_t = 0
 import concurrent.futures
 
 # Define the strategies and their winning rates
 strategies = [
-    ([10] * 11, "Strategy 1: 11 Pack 1", 60.32),
-    ([10] * 9 + [25], "Strategy 2: 9 Pack 1, 1 Pack 3", 78.75),
-    ([10] * 5 + [25] + [40], "Strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5", 82.94),
-    ([10] * 7 + [40], "Strategy 4: 7 Pack 1, 1 Pack 5", 67.53),
-    ([10] * 6 + [25] * 2, "Strategy 5: 6 Pack 1, 2 Pack 3", 73.66),
-    ([10] * 2 + [25] * 2 + [40], "Strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5", 88.81),
-    ([10] * 3 + [40] * 2, "Strategy 7: 3 Pack 1, 2 Pack 5", 32.23),
-    ([10] + [25] + [40] * 2, "Strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5", 86.18),
-    ([25] * 3 + [40], "Strategy 9: 3 Pack 3, 1 Pack 5", 94.23),
-    ([25] * 4 + [10], "Strategy 10: 4 Pack 3, 1 Pack 1", 95.38),
-    ([25] * 3 + [10]*4, "Strategy 11: 3 Pack 3, 4 Pack 1", 95.42)
+    ([10] * 11, "Strategy 1: 11 Pack 1", 60.44),
+    ([10] * 9 + [25], "Strategy 2: 9 Pack 1, 1 Pack 3", 67.90),
+    ([10] * 5 + [25] + [40], "Strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5", 73.97),
+    ([10] * 7 + [40], "Strategy 4: 7 Pack 1, 1 Pack 5", 67.83),
+    ([10] * 6 + [25] * 2, "Strategy 5: 6 Pack 1, 2 Pack 3", 67.7),
+    ([10] * 2 + [25] * 2 + [40], "Strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5", 73.92),
+    ([10] * 3 + [40] * 2, "Strategy 7: 3 Pack 1, 2 Pack 5", 73.78),
+    ([10] + [25] + [40] * 2, "Strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5", 78.89),
+    ([25] * 3 + [40], "Strategy 9: 3 Pack 3, 1 Pack 5", 78.72),
+    ([25] * 4 + [10], "Strategy 10: 4 Pack 3, 1 Pack 1", 73.88),
+    ([25] * 3 + [10]*4, "Strategy 11: 3 Pack 3, 4 Pack 1", 74.14)
 ]
-
 
 def evaluate_combination(current_combination):
     global counter_t
     a = []
-    for i in range(100000):
+    for i in range(1000):
         counter = [0, 0, 0, 0, 0]
         b = 0
         for j in current_combination:
@@ -464,7 +434,6 @@ def evaluate_combination(current_combination):
 
         return current_combination, sum(current_combination), expect
     return None
-
 
 def find_combinations():
     options = [10, 25, 40]
@@ -507,7 +476,38 @@ def find_combinations():
             f"{combination[0]} = {combination[1]}, Expected {combination[2]}, {strategy_name}, Winning rate: {winning_rate}%")
 
 
-# Call the function to print all combinations
+### Simulation functions ###
+
+#Run this function to simulate the number of single packs neeed
+#plotbar(open1m1())
+
+
+#Run these code to print strategies and their winning rate
+# s1 = round((test_sta1()*100),2)
+# s2 = round((test_sta2()*100),2)
+# s3 = round((test_sta3()*100),2)
+# s4 = round((test_sta4()*100),2)
+# s5 = round((test_sta5()*100),2)
+# s6 = round((test_sta6()*100),2)
+# s7 = round((test_sta7()*100),2)
+# s8 = round((test_sta8()*100),2)
+# s9 = round((test_sta9()*100),2)
+# s10 = round((test_sta10()*100),2)
+# s11 = round((test_sta11()*100),2)
+# print("strategy 1: 11 Pack 1                    -> " + str(s1)+"%" +" - "+ str (round((((1*11)+(3*0)+(5*0))),2)))
+# print("strategy 2: 9 Pack 1, 1 Pack 3           -> " + str(s2)+"%" +" - "+ str (round((((1*9)+(3*1)+(5*0))),2)))
+# print("strategy 3: 5 Pack 1, 1 Pack 3, 1 Pack 5 -> " + str(s3)+"%" +" - "+ str (round((((1*5)+(3*1)+(5*1))),2)))
+# print("strategy 4: 7 Pack 1, 1 Pack 5           -> " + str(s4)+"%" +" - "+ str (round((((1*7)+(3*0)+(5*1))),2)))
+# print("strategy 5: 6 Pack 1, 2 Pack 3,          -> " + str(s5)+"%" +" - "+ str (round((((1*6)+(3*2)+(5*0))),2)))
+# print("strategy 6: 2 Pack 1, 2 Pack 3, 1 Pack 5 -> " + str(s6)+"%" +" - "+ str (round((((1*2)+(3*2)+(5*1))),2)))
+# print("strategy 7: 3 Pack 1, 2 Pack 5           -> " + str(s7)+"%" +" - "+ str (round((((1*3)+(3*0)+(5*2))),2)))
+# print("strategy 8: 1 Pack 1, 1 Pack 3, 2 Pack 5 -> " + str(s8)+"%" +" - "+ str (round((((1*1)+(3*1)+(5*2))),2)))
+# print("strategy 9: 3 Pack 3, 1 Pack 5           -> " + str(s9)+"%" +" - "+ str (round((((1*0)+(3*3)+(5*1))),2)))
+# print("strategy 10: 1 pack 1, 4 Pack 3          -> " + str(s10)+"%" +" - "+ str (round((((1*1)+(3*4)+(5*0))),2)))
+# print("strategy 11: 4 pack 1, 3 Pack 3          -> " + str(s11)+"%" +" - "+ str (round((((1*4)+(3*3)+(5*0))),2)))
+
+
+#run this code to print the conditional expectation of all sequences of option given that try success
 # find_combinations()
 
 
